@@ -17,7 +17,7 @@ These scripts were written in R version 4.0.2 and RStudio Version 1.1.383. Analy
 
 ## How to use this repo
 
-Scripts are run in order as numbered. The initial preamble scripts include the packages needed to run the analyses. 
+Scripts are run in order as numbered. Numbering is non-sequential as an artefact of varying attempts at correcting Gsynth outputs. The initial preamble scripts includes the packages needed to run the analyses. Scripts 07 and later assume a panel dataset of HES data with linked additional information from GIRFT - scripts on how to create this dataset to be added shortly. 
 
 ## Contributors
 
