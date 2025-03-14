@@ -7,7 +7,7 @@
 
 # Corresponding author: Stefano Conti (e. stefano.conti@health.org.uk)
 
-# Last modified: 02 August 2024
+# Last modified: 13 March 2025
 
 # Description: 
 # Derive inferences on effect parameters and counterfactual outcomes from a GSynth model fitted 
@@ -133,7 +133,12 @@ correct_gsynth.fn <- function(gsynth_mdl,
   ## Preamble ##
   ##############
   
-  require("gsynth")  # Load required GSynth routines library
+  if(! require("gsynth")) 
+    {
+    install.packages("gsynth")
+    
+    library("gsynth")
+    }  # Install if needed and load required GSynth routines library
   
   stopifnot(class(gsynth_mdl) == "gsynth", 
             is.data.frame(data.dat) & all(unlist(gsynth_mdl[c("Y", "D", "index", "X")]) %in% names(data.dat)), 
@@ -569,7 +574,7 @@ correct_gsynth.fn <- function(gsynth_mdl,
   ############################
   
   att.out_mean.dat <- with(gsynth_mdl, 
-                           expr=data.frame(comparator=paste(ifelse(min(T0) == max(T0), "old", "new"), "hub", sep="_"), 
+                           expr=data.frame(rollout=paste0(ifelse(min(T0) == max(T0), "non-", ""), "staggered"), 
                                            outcome=Y,   # Set outcome name
                                            time=c(paste(-1, -max(T0), sep=" - "), 
                                                   paste(1, T - min(T0), sep=" - ")
@@ -645,7 +650,7 @@ correct_gsynth.fn <- function(gsynth_mdl,
   ############################
   
   att.out_time.dat <- with(gsynth_mdl, 
-                           expr=data.frame(comparator=paste(ifelse(min(T0) == max(T0), "old", "new"), "hub", sep="_"), 
+                           expr=data.frame(rollout=paste0(ifelse(min(T0) == max(T0), "non-", ""), "staggered"), 
                                            outcome=Y,   # Set outcome name
                                            time=c(- seq.int(max(T0)), seq.int(T - min(T0))),   # Set intervention times of interest
                                            unit="Pooled",   # Set intervention units of interest
@@ -732,7 +737,7 @@ correct_gsynth.fn <- function(gsynth_mdl,
   #############################
   
   att.out_time_mean.dat <- with(gsynth_mdl, 
-                                expr=data.frame(comparator=paste(ifelse(min(T0) == max(T0), "old", "new"), "hub", sep="_"), 
+                                expr=data.frame(rollout=paste0(ifelse(min(T0) == max(T0), "non-", ""), "staggered"), 
                                                 outcome=Y,   # Set outcome name
                                                 time=c(paste(-time.vec[c(1, length(time.vec))], collapse=" - "), 
                                                        paste(time.vec[c(1, length(time.vec))], collapse=" - ")
@@ -808,7 +813,7 @@ correct_gsynth.fn <- function(gsynth_mdl,
   ############################
   
   att.out_unit.dat <- with(gsynth_mdl, 
-                           expr=data.frame(comparator=paste(ifelse(min(T0) == max(T0), "old", "new"), "hub", sep="_"), 
+                           expr=data.frame(rollout=paste0(ifelse(min(T0) == max(T0), "non-", ""), "staggered"), 
                                            outcome=Y,   # Set outcome name
                                            time=rep(c(paste(-1, -max(T0), sep=" - "), 
                                                       paste(1, T - min(T0), sep=" - ")
@@ -898,7 +903,7 @@ correct_gsynth.fn <- function(gsynth_mdl,
   ############################
   
   att.out_unit_mean.dat <- with(gsynth_mdl, 
-                                expr=data.frame(comparator=paste(ifelse(min(T0) == max(T0), "old", "new"), "hub", sep="_"), 
+                                expr=data.frame(rollout=paste0(ifelse(min(T0) == max(T0), "non-", ""), "staggered"), 
                                                 outcome=Y,   # Set outcome name
                                                 time=rep(c(paste(-time.vec[c(1, length(time.vec))], collapse=" - "), 
                                                            paste(time.vec[c(1, length(time.vec))], collapse=" - ")
@@ -999,7 +1004,7 @@ correct_gsynth.fn <- function(gsynth_mdl,
   ###############################
   
   att.out.dat <- with(gsynth_mdl, 
-                      expr=data.frame(comparator=paste(ifelse(min(T0) == max(T0), "old", "new"), "hub", sep="_"), 
+                      expr=data.frame(rollout=paste0(ifelse(min(T0) == max(T0), "non-", ""), "staggered"), 
                                       outcome=Y,   # Set outcome name
                                       time=c(apply(rbind(T0, T - T0), 
                                                    MARGIN=2, 
@@ -1108,7 +1113,7 @@ correct_gsynth.fn <- function(gsynth_mdl,
                    make.row.names=FALSE
                    )  # Bind ATT and change inferences data-frames
   
-  inf.dat <- inf.dat[, c("comparator", "outcome", "time", "unit", 
+  inf.dat <- inf.dat[, c("rollout", "outcome", "time", "unit", 
                          paste("att", 
                                c("mean", "se", "ci.lower", "ci.upper"), 
                                sep="_"
